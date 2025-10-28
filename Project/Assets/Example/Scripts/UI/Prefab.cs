@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Text;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using WXQToolKits.FolderKit.Runtime;
+using FolderProcessor;
 
 namespace Example.Scripts.UI
 {
@@ -35,7 +33,7 @@ namespace Example.Scripts.UI
 
             if (folderNode.IsFolderContainsImageTextureList)
             {
-                rawImage.texture = folderNode.GetTexture(0);
+                rawImage.texture = folderNode.GetTextureWithIndex(0);
             }
 
             if (folderNode.ChildCount > 0)

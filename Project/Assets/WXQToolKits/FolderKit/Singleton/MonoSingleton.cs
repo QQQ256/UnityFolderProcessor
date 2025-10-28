@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WXQToolKits.FolderKit.Singleton
+namespace FolderProcessor.Singleton
 {
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {

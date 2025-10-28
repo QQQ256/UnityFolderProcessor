@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using WXQToolKits.FolderKit.Runtime;
+using FolderProcessor;
 
 namespace Example.Scripts.UI
 {
