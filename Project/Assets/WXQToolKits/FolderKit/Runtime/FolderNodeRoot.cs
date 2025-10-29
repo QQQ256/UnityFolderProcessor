@@ -13,7 +13,7 @@ namespace FolderProcessor
         /// key - 父文件夹名
         /// value - 文件夹内容节点，包含图片List，文本文件，视频List等
         /// </summary>
-        public readonly Dictionary<string, FolderNode> FilesDictionary = new();
+        public Dictionary<string, FolderNode> FilesDictionary { get; } = new();
 
         public FolderNodeRoot(string folderNodeName)
         {

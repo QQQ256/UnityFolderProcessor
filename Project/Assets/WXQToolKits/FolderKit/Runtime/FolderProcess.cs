@@ -1,49 +1,36 @@
 using System;
 using System.Collections.Generic;
-using FolderProcessor.Singleton;
 using UnityEngine;
 
 namespace FolderProcessor
 {
-    public partial class FolderProcess : MonoSingleton<FolderProcess>
+    [Serializable]
+    public partial class FolderProcess
     {
-        private static InitializeParameters _initializeParameters;
-        private static bool _initialized;
+        private InitializeParameters _initializeParameters;
+        private string _folderProcessName;
+        private bool _initialized;
         
         /// <summary>
         /// 用户自定义读取的根目录文件夹节点
         /// </summary>
-        private static readonly Dictionary<string, FolderNodeRoot> RootFolderNodes = new();
-
-        private static FolderNodeRoot DefaultFolderNode => RootFolderNodes[DefaultRootNodeName];
+        private Dictionary<string, FolderNode> _nodeDictionary;
         
-        public const string DefaultRootNodeName = "DefaultRootNode";
+        private static MonoBehaviour _driverInstance;
 
-        public static void Initialize(InitializeParameters parameters)
+        internal void Initialize(InitializeParameters parameters, MonoBehaviour driver, string folderProcessName)
         {
             CheckInitializeParameters(parameters);
+
+            _nodeDictionary = new Dictionary<string, FolderNode>();
+            _folderProcessName = folderProcessName;
+            _driverInstance = driver;
             _initialized = true;
         }
-        
-        public static FolderNodeRoot GetFolderNodeRoot(string rootNodeName = DefaultRootNodeName)
-        {
-            if (RootFolderNodes.TryGetValue(rootNodeName, out var node))
-            {
-                return node;
-            }
 
-            throw new Exception($"Failed to get FolderNodeRoot: {rootNodeName}");
-        }
-
-        public static FolderNode GetFolderNodeWithFolderOriginalName(string folderName, string rootNodeName = DefaultRootNodeName)
+        internal FolderNode GetFolderNodeWithFolderOriginalName(string folderName)
         {
-            if (!RootFolderNodes.TryGetValue(rootNodeName, out var node))
-            {
-                throw new Exception($"Failed to get FolderNodeRoot: {rootNodeName}");
-            }
-            
-            var filesDictionary = node.FilesDictionary;
-            if (filesDictionary.TryGetValue(folderName, out FolderNode targetNode))
+            if (_nodeDictionary.TryGetValue(folderName, out FolderNode targetNode))
             {
                 return targetNode;
             }
@@ -51,7 +38,7 @@ namespace FolderProcessor
             throw new Exception($"Failed to get FolderNode: {folderName}");
         }
 
-        private static void CheckInitializeParameters(InitializeParameters parameters)
+        private void CheckInitializeParameters(InitializeParameters parameters)
         {
             if (_initialized)
             {
@@ -64,22 +51,72 @@ namespace FolderProcessor
             _initializeParameters = parameters;
         }
 
-        private static void ClearAllFolderNodeData()
+
+        #region 删除节点逻辑
+
+        internal bool RemoveFolderNode(string rootFolderName, string folderToRemove)
         {
-            foreach (var rootFolderNode in RootFolderNodes)
+            var nodeDictionary = _nodeDictionary;
+            
+            if (nodeDictionary.TryGetValue(folderToRemove, out FolderNode node))
             {
-                foreach (var folderNode in rootFolderNode.Value.RootNodeChild)
+                RecursiveDeleteFolderNodes(node);
+
+                if (node.Parent != null)
                 {
-                    folderNode.Clear();
+                    var nodeList = node.ParentChildrenNodes;
+                    if (nodeList.Contains(node))
+                    {
+                        node.Clear();
+                        nodeList.Remove(node);
+                    }
+                }
+
+                nodeDictionary.Remove(folderToRemove);
+                if (!nodeDictionary.ContainsKey(folderToRemove))
+                {
+                    Debug.Log($"Successfully delete folder node{folderToRemove}, which is from the root node {rootFolderName}");
+                    return true;
                 }
             }
-            
-            Debug.Log("All FolderNode data cleared.");
+           
+
+            return false;
         }
 
-        private void OnDestroy()
+        private void RecursiveDeleteFolderNodes(FolderNode node)
         {
-            ClearAllFolderNodeData();
+            if (node.ChildCount == 0)
+            {
+                return;
+            }
+
+            var nodeDictionary = _nodeDictionary;
+            foreach (var child in node.Children)
+            {
+                child.Clear();
+                RecursiveDeleteFolderNodes(child);
+                nodeDictionary.Remove(child.Name);
+            }
+
+            node.Children.Clear();
+        }
+
+        #endregion
+
+
+        private void AddFolderNodeToDictionary(string key, FolderNode value) => _nodeDictionary[key] = value;
+
+        public void ClearAllFolderNodeData()
+        {
+            foreach (var folderNode in _nodeDictionary)
+            {
+                folderNode.Value.Clear();
+            }
+            _nodeDictionary.Clear();
+            _nodeDictionary = null;
+            
+            Debug.Log("All FolderNode data cleared.");
         }
     }
 }

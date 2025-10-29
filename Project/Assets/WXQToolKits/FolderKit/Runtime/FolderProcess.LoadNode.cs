@@ -16,27 +16,21 @@ namespace FolderProcessor
         private static readonly string[] SupportedTextExtensions = { ".txt" };
         private static readonly string[] SupportedVideoExtensions = { ".mp4", ".mov" };
 
-        private static List<string> _filteredFolderNameList = new();
-        
-        public void DefaultLoadAllData(string nodeName, Action action = null)
+        private List<string> _filteredFolderNameList = new();
+
+        public void LoadAsync(Action loadedAction)
         {
             if (_initialized == false)
             {
                 throw new Exception($"{nameof(FolderProcess)} is not initialized yet.");
             }
             
-            string nodeFilePath = Application.streamingAssetsPath + "/Resources";
+            FolderNode rootNode = new FolderNode(_folderProcessName);
+            string absPath = _initializeParameters.LoadPath;
             
-            CustomLoadAllData(nodeName, nodeFilePath, action);
-        }
-
-        public void CustomLoadAllData(string rootFolderNodeName, string absPath, Action action = null)
-        {
-            FolderNodeRoot rootNode = CreateRootFolderNode(rootFolderNodeName);
-            if (rootNode != null)
-            {
-                StartCoroutine(AddChildFoldersCoroutine(rootNode, rootNode.RootNode, absPath, 0, action));
-            }
+            AddFolderNodeToDictionary(_folderProcessName, rootNode);
+            
+            _driverInstance.StartCoroutine(AddChildFoldersCoroutine(rootNode, absPath, 0, loadedAction));
         }
 
         // public void LoadExtraDataFromFolderPath(string folderName, Action action)
@@ -52,7 +46,7 @@ namespace FolderProcessor
         
 
         #region Set Filter Folders
-        public static void SetFilterFolders(List<string> filteredFolderNameList)
+        public void SetFilterFolders(List<string> filteredFolderNameList)
         {
             /*
              * example:
@@ -65,25 +59,9 @@ namespace FolderProcessor
             _filteredFolderNameList = filteredFolderNameList;
         }
         #endregion
-
-        private static FolderNodeRoot CreateRootFolderNode(string rootNodeName)
-        {
-            if (RootFolderNodes.ContainsKey(rootNodeName))
-            {
-                throw new Exception("FolderNode with the same name already exists in RootFolderNodes dictionary.");
-            }
-            
-            var newNode = new FolderNodeRoot(rootNodeName);
-            if (RootFolderNodes.TryAdd(rootNodeName, newNode))
-            {
-                return newNode;
-            }
-            
-            throw new Exception("Failed to create Root FolderNode.");
-        }
         
 
-        private IEnumerator AddChildFoldersCoroutine(FolderNodeRoot folderNodeRoot, FolderNode parentNode, string parentFolderPath, int currentDepth, Action action = null)
+        private IEnumerator AddChildFoldersCoroutine(FolderNode parentNode, string parentFolderPath, int currentDepth, Action action = null)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(parentFolderPath);
             DirectoryInfo[] directories = directoryInfo.GetDirectories();
@@ -106,13 +84,13 @@ namespace FolderProcessor
 
                 FolderNode folderNode = new FolderNode(key, parentNode);
 
-                folderNodeRoot.AddFolderNodeToDictionary(key, folderNode);
+                AddFolderNodeToDictionary(key, folderNode);
 
-                yield return StartCoroutine(ProcessFilesInDirectory(directory.FullName, folderNode));
+                yield return _driverInstance.StartCoroutine(ProcessFilesInDirectory(directory.FullName, folderNode));
 
                 parentNode.Children.Add(folderNode);
 
-                yield return StartCoroutine(AddChildFoldersCoroutine(folderNodeRoot, folderNode, directory.FullName, currentDepth + 1));
+                yield return _driverInstance.StartCoroutine(AddChildFoldersCoroutine(folderNode, directory.FullName, currentDepth + 1));
 
                 processedCount++;
 
@@ -120,9 +98,9 @@ namespace FolderProcessor
 
                 if (action != null && processedCount == directoriesCount)
                 {
-                    Debug.Log($"RootFolderNode <color=red>{folderNodeRoot.RootNodeName}</color> created, " +
+                    Debug.Log($"FolderProcess <color=red>{_folderProcessName}</color> created, " +
                               $"folder path is <color=blue>{parentFolderPath}</color>, start BFS load images.");
-                    StartCoroutine(BfsLoadAllImages(folderNodeRoot.RootNodeName, parentNode, action));
+                    _driverInstance.StartCoroutine(BfsLoadAllImages(parentNode, action));
                 }
             }
         }
@@ -152,7 +130,7 @@ namespace FolderProcessor
             yield return null;
         }
         
-        private IEnumerator BfsLoadAllImages(string rootNodeName, FolderNode rootNode, Action action)
+        private IEnumerator BfsLoadAllImages(FolderNode rootNode, Action action = null)
         {
             Queue<FolderNode> nodeQueue = new Queue<FolderNode>();
             nodeQueue.Enqueue(rootNode);
@@ -168,7 +146,7 @@ namespace FolderProcessor
                     foreach (string imagePath in currentNode.ImagePaths)
                     {
                         Texture2D texture = null;
-                        yield return StartCoroutine(FolderNodeUtility.LoadImageAsync(imagePath, (loadedTexture) => texture = loadedTexture));
+                        yield return _driverInstance.StartCoroutine(FolderNodeUtility.LoadImageAsync(imagePath, (loadedTexture) => texture = loadedTexture));
 
                         if (texture != null)
                         {
@@ -196,8 +174,8 @@ namespace FolderProcessor
                 }
             }
 
-            Debug.Log($"<color=red>{rootNodeName}</color> textures loaded.");
-            action(); // 执行传入的动作
+            Debug.Log($"<color=red>{_folderProcessName}</color> textures loaded, the final load phase done!");
+            action?.Invoke();
         }
     }
 }

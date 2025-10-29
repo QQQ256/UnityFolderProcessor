@@ -34,12 +34,6 @@ namespace FolderProcessor.Singleton
                 _instance = gameObject.GetComponent<T>();
 
             }
-            this.OnStart();
-        }
-
-        protected virtual void OnStart()
-        {
-
         }
     }
 }

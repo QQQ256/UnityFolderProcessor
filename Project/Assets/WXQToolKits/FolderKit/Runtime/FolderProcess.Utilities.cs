@@ -53,56 +53,6 @@ namespace FolderProcessor
                     }));
                 });
          */
-
-        public static bool RemoveFolderNode(string rootFolderName, string folderToRemove)
-        {
-            if (RootFolderNodes.TryGetValue(rootFolderName, out FolderNodeRoot nodeRoot))
-            {
-                var targetFolderDic = nodeRoot.FilesDictionary;
-                if (targetFolderDic.TryGetValue(folderToRemove, out FolderNode node))
-                {
-                    RecursiveDeleteFolderNodes(node);
-
-                    if (node.Parent != null)
-                    {
-                        var nodeList = node.ParentChildrenNodes;
-                        if (nodeList.Contains(node))
-                        {
-                            node.Clear();
-                            nodeList.Remove(node);
-                        }
-                    }
-
-                    targetFolderDic.Remove(folderToRemove);
-                    if (!targetFolderDic.ContainsKey(folderToRemove))
-                    {
-                        Debug.Log($"Successfully delete folder node{folderToRemove}, which is from the root node {rootFolderName}");
-                        return true;
-                    }
-                }
-            }
-           
-
-            return false;
-        }
-
-        private static void RecursiveDeleteFolderNodes(FolderNode node, string rootFolderName = DefaultRootNodeName)
-        {
-            if (node.ChildCount == 0)
-            {
-                return;
-            }
-
-            var targetFolderDic = RootFolderNodes[rootFolderName].FilesDictionary;
-            foreach (var child in node.Children)
-            {
-                child.Clear();
-                RecursiveDeleteFolderNodes(child);
-                targetFolderDic.Remove(child.Name);
-            }
-
-            node.Children.Clear();
-        }
         #endregion
     }
 }
