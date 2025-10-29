@@ -1,4 +1,3 @@
-using Example.Scripts.UI;
 using UnityEngine;
 using FolderProcessor;
 

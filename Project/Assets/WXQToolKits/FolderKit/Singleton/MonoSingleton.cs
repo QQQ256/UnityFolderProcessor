@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FolderProcessor.Singleton
+namespace FolderProcessor
 {
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {

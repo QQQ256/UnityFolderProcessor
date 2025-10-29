@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using FolderProcessor.Singleton;
 using UnityEngine;
 
 namespace FolderProcessor
 {
     public class FolderProcessDriver : MonoSingleton<FolderProcessDriver>
     {
-        private static readonly Dictionary<string, FolderProcess> FolderProcesses = new();
+        private static Dictionary<string, FolderProcess> _folderProcesses;
         
         private const string DefaultFolderProcessName = "DefaultFolderProcess";
         
@@ -29,15 +28,19 @@ namespace FolderProcessor
             }
             
             _isInitialized = true;
+            _folderProcesses = new Dictionary<string, FolderProcess>();
+            
             CreateDefaultFolderProcess(loadedAction);
         }
 
         public void OnDestroy()
         {
-            foreach (FolderProcess folderProcess in FolderProcesses.Values)
+            foreach (FolderProcess folderProcess in _folderProcesses.Values)
             {
                 folderProcess.ClearAllFolderNodeData();
             }
+            _folderProcesses.Clear();
+            _folderProcesses = null;
         }
 
         public void CreateFolderProcess(string folderProcessName, InitializeParameters initializeParameters = null, Action loadedAction = null)
@@ -50,7 +53,7 @@ namespace FolderProcessor
 
         public FolderNode GetFolderNodeByFolderProcessName(string folderProcessName, string folderName)
         {
-            if (FolderProcesses.TryGetValue(folderProcessName, out FolderProcess folderProcess))
+            if (_folderProcesses.TryGetValue(folderProcessName, out FolderProcess folderProcess))
             {
                 return folderProcess.GetFolderNodeWithFolderOriginalName(folderName);
             }
@@ -66,11 +69,11 @@ namespace FolderProcessor
         
         private void CreateFolderProcessInternal(string folderProcessName, Action loadedAction = null, InitializeParameters initializeParameters = null)
         {
-            var defaultFolderProcess = new FolderProcess();
-            defaultFolderProcess.Initialize(initializeParameters, this, folderProcessName);
-            defaultFolderProcess.LoadAsync(loadedAction);
+            var folderProcess = new FolderProcess();
+            folderProcess.Initialize(initializeParameters, this, folderProcessName);
+            folderProcess.LoadAsync(loadedAction);
 
-            if (FolderProcesses.TryAdd(folderProcessName, defaultFolderProcess))
+            if (_folderProcesses.TryAdd(folderProcessName, folderProcess))
             {
                 Debug.Log("Create FolderProcess: " + folderProcessName);
             }
