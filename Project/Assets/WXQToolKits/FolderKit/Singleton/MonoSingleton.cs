@@ -19,7 +19,6 @@ namespace FolderProcessor
 
         }
 
-
         private void Awake()
         {
             Debug.LogWarningFormat("{0}{1} awake" ,typeof(T),this.GetInstanceID());
@@ -33,7 +32,10 @@ namespace FolderProcessor
                 DontDestroyOnLoad(this.gameObject);
                 _instance = gameObject.GetComponent<T>();
 
+                OnStart();
             }
         }
+
+        protected virtual void OnStart() {}
     }
 }

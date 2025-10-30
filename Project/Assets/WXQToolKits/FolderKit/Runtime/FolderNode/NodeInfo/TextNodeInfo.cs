@@ -19,7 +19,7 @@ namespace FolderProcessor
         {
             if (IsEmpty)
                 return string.Empty;
-            return string.Join("\n", strings.ToString());
+            return string.Join("\n", strings);
         }
     }
 }

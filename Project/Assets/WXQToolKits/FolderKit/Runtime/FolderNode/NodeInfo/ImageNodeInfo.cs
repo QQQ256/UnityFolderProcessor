@@ -6,12 +6,8 @@ using UnityEngine.Serialization;
 
 namespace FolderProcessor
 {
-    [Serializable]
     public class ImageTexture
     {
-        /// <summary>
-        /// Texture2D 在序列化时会因为层级太深有Warning
-        /// </summary>
         public Texture2D Texture;
         public string TextureName;
     }
@@ -30,8 +26,7 @@ namespace FolderProcessor
             _imageTextureList.Clear();
         }
         
-        [SerializeField]
-        private List<ImageTexture> _imageTextureList = new List<ImageTexture>();
+        private readonly List<ImageTexture> _imageTextureList = new();
 
         public List<Texture2D> Texture2DList =>
             _imageTextureList.Where(t => t.Texture != null).Select(t => t.Texture).ToList();

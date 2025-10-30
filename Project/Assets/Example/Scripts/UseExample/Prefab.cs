@@ -31,7 +31,7 @@ namespace Example.Scripts.UI
                 textForFolderNodeText.text = "No text for folder node";
             }
 
-            if (folderNode.IsFolderContainsImageTextureList)
+            if (folderNode.IsContainsImageTextureList)
             {
                 rawImage.texture = folderNode.GetTextureWithIndex(0);
             }

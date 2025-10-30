@@ -14,11 +14,11 @@ namespace FolderProcessor
         [SerializeField] private string name;
         [SerializeField] private int height;
         [SerializeField] private int depth;
-        [FormerlySerializedAs("imageInfo")] [SerializeField] private ImageNodeInfo imageNodeInfo = new ImageNodeInfo();
-        [FormerlySerializedAs("videoInfo")] [SerializeField] private VideoNodeInfo videoNodeInfo = new VideoNodeInfo();
-        [FormerlySerializedAs("textInfo")] [SerializeField] private TextNodeInfo textNodeInfo = new TextNodeInfo();
+        [SerializeField] private ImageNodeInfo imageNodeInfo = new();
+        [SerializeField] private VideoNodeInfo videoNodeInfo = new();
+        [SerializeField] private TextNodeInfo textNodeInfo = new();
 
-        [SerializeField] private List<FolderNode> children = new List<FolderNode>();
+        [SerializeField] private List<FolderNode> children = new();
 
         // 修改属性访问器
         public string Name => name;
@@ -62,7 +62,7 @@ namespace FolderProcessor
         {
             // 基础信息
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"<color=green> FolderNode: {Name}");
+            sb.AppendLine($"<color=green> FolderNodeName: {Name}");
             sb.AppendLine($"├─ Depth: {Depth}");
             sb.AppendLine($"├─ Height: {Height}");
             sb.AppendLine($"├─ Children: {ChildCount}");
@@ -89,9 +89,9 @@ namespace FolderProcessor
         }
         
         // 资源标记
-        public bool IsFolderContainsVideo => videoNodeInfo.IsEmpty;
-        public bool IsFolderContainsText => textNodeInfo.IsEmpty;
-        public bool IsFolderContainsImageTextureList => imageNodeInfo.IsEmpty;
+        public bool IsFolderContainsVideo => !videoNodeInfo.IsEmpty;
+        public bool IsFolderContainsText => !textNodeInfo.IsEmpty;
+        public bool IsContainsImageTextureList => !imageNodeInfo.IsEmpty;
 
 
         // public TextInfo GetTextInfo() => textInfo;
@@ -106,7 +106,6 @@ namespace FolderProcessor
         // 图片读取相关方法
         // 图片路径
         public List<string> ImagePaths { get; private set; } = new List<string>();
-        // TODO: 这里可以再弄个配置之类的，是否需要去清空路径列表
         public void ClearImagePaths() => ImagePaths.Clear();
         
         // 图片信息，将磁盘中的图片读取并存储至内存中
