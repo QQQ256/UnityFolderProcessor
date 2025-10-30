@@ -6,6 +6,12 @@ FolderKit是一个基于目录树的工具类，用于读取指定目录下的�
 
 这个工具最主要的价值是把文件夹转换为目录树，并且支持一些快捷的文件夹数据搜索和读取，方便对数据进行获取。
 
+
+
+## 视频参考
+
+<video src="C:\Users\wxq\PlayDev\GitHub\UnityFolderProcessor\bandicam 2025-10-30 17-14-41-238.mp4" controls=""></video>
+
 ## 入口
 
 Boot场景会默认加载StreamingAssets下的Resources文件夹，将内部的所有文件夹和数据进行读取，当图片加载完成后，触发回调跳转场景至SampleScene。
