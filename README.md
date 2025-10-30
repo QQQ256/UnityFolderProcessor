@@ -10,6 +10,8 @@ FolderKit是一个基于目录树的工具类，用于读取指定目录下的�
 
 ## 视频参考
 
+详情见目录下的bandicam开头视频。
+
 <video src="C:\Users\wxq\PlayDev\GitHub\UnityFolderProcessor\bandicam 2025-10-30 17-14-41-238.mp4" controls=""></video>
 
 ## 入口
