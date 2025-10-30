@@ -42,13 +42,22 @@ namespace Example.Scripts
                 // 通过自己设定的FolderProcess名称获取对应的RootFolderNode
                 FolderNode rootFolderNode = FolderProcessDriver.Instance.
                     GetFolderNodeByFolderProcessName(folderProcessName, folderProcessName);
-
+                
+                // UI 展示
                 if (rootFolderNode != null)
                 {
                     Setup(rootFolderNode);
                     
                     verticalRect.gameObject.SetActive(true);
                     loadButton.gameObject.SetActive(false);
+                }
+                
+                // 查询这个 FolderProcess 下的某个特定 FolderNode
+                FolderNode folderNodeNameC = FolderProcessDriver.Instance.
+                    GetFolderNodeByFolderProcessName("FolderC", folderProcessName);
+                if (folderNodeNameC != null)
+                {
+                    Debug.Log("Successfully get FolderNode 'FolderC' from FolderProcess '" + folderProcessName + "': " + folderNodeNameC.ToString());
                 }
             });
         }

@@ -2,7 +2,7 @@ using UnityEngine;
 using FolderProcessor;
 using UnityEngine.SceneManagement;
 
-namespace Example.Scripts.Launch
+namespace Example.Scripts
 {
     public class Boot : MonoBehaviour
     {
@@ -15,17 +15,6 @@ namespace Example.Scripts.Launch
                 Debug.Log("FolderProcessDriver initialized");
                 SceneManager.LoadScene("SampleScene");
             });
-
-            // driver.CreateFolderProcess("Test",
-            //     new InitializeParameters()
-            //     {
-            //         LoadPath = @"D:\SharedTest\XiaoPeng-16-AIGC"
-            //     }, () =>
-            //     {
-            //         Debug.Log("Test FolderProcess loaded");
-            //         var node = driver.GetFolderNodeByFolderProcessName("SignFolder", "Test");
-            //         Debug.Log(node.TextureCount);
-            //     });
         }
     }
 }

@@ -6,22 +6,7 @@ namespace FolderProcessor
 {
     public class FolderProcessDriver : MonoSingleton<FolderProcessDriver>
     {
-        public FolderNode RootFolderNode
-        {
-            get
-            {
-                // 优先获取自定义FolderProcess中的RootFolderNode
-                if (string.IsNullOrEmpty(_customFolderProcessName))
-                {
-                    return GetFolderNodeByFolderProcessName(DefaultFolderProcessName);
-                }
-                
-                // 其次是用户自定的FolderProcess
-                return GetFolderNodeByFolderProcessName(_customFolderProcessName);
-            }
-        }
         private const string DefaultFolderProcessName = "DefaultFolderProcess";
-        private static string _customFolderProcessName = string.Empty;
         
         private static Dictionary<string, FolderProcess> _folderProcesses;
         private static readonly InitializeParameters DefaultInitializeParameters = new InitializeParameters
@@ -62,9 +47,6 @@ namespace FolderProcessor
         {
             if (initializeParameters == null)
                 initializeParameters = DefaultInitializeParameters;
-
-            if (folderProcessName != DefaultFolderProcessName)
-                _customFolderProcessName = folderProcessName;
 
             CreateFolderProcessInternal(folderProcessName, loadedAction, initializeParameters);
         }

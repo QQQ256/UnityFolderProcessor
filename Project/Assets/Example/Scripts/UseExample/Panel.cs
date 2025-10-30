@@ -25,6 +25,7 @@ namespace Example.Scripts.UI
 
         private void UseCase1()
         {
+            // 默认第二个参数是 DefaultFolderProcessName，如果需要查询其他 FolderProcessName 下的 FolderNode，需要传入对应的 FolderProcessName
             FolderNode folderNodeNameC = FolderProcessDriver.Instance.GetFolderNodeByFolderProcessName("FolderC");
             if (folderNodeNameC != null)
             {
@@ -34,7 +35,8 @@ namespace Example.Scripts.UI
 
         private void UseCase2()
         {
-            FolderNode rootFolderNode = FolderProcessDriver.Instance.RootFolderNode;
+            // 默认第二个参数是 DefaultFolderProcessName，如果需要查询其他 FolderProcessName 下的 FolderNode，需要传入对应的 FolderProcessName
+            FolderNode rootFolderNode = FolderProcessDriver.Instance.GetFolderNodeByFolderProcessName("Data");
             if (rootFolderNode != null)
             {
                 useCase2.Setup(rootFolderNode);
