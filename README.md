@@ -9,7 +9,7 @@ FolderKit是一个基于目录树的工具类，用于读取指定目录下的�
 
 
 ## 视频参考
-(https://github.com/user-attachments/assets/668496c8-0694-4505-9cc7-2f9d559353c4)
+https://github.com/user-attachments/assets/668496c8-0694-4505-9cc7-2f9d559353c4
 
 ## 入口
 
